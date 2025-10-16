@@ -1,0 +1,7 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  sql.init.mode: never
+  test.database.replace: none
