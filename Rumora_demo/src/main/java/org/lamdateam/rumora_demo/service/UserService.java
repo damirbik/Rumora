@@ -5,6 +5,7 @@ import org.lamdateam.rumora_demo.entity.UserRole;
 import org.lamdateam.rumora_demo.repository.IRoleRepository;
 import org.lamdateam.rumora_demo.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ public class UserService {
 
     @Autowired
     private IRoleRepository roleRepository;
+    private String user;
 
     public List<User> getAllUsers(){
         return userRepository.findAll();
@@ -33,20 +35,34 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User createUser(String username, String email, String passwordHash, String roleName){
-        if(userRepository.existsByUsername(username)){
-            throw new RuntimeException("Username already exists: " + username);
+    public User createUser(String username, String email, String passwordHash) {
 
+        if (userRepository.existsByUsername(username)) {
+            throw new RuntimeException("Username already exists: " + username);
         }
-        if(userRepository.existsByEmail(email)){
+        if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("Email already exists: " + email);
         }
 
-        UserRole role = roleRepository.findByRoleName(roleName)
-                .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+        // Получаем роль по умолчанию
+        UserRole defaultRole = roleRepository.findByRoleName("User")
+                .orElseThrow(() -> new RuntimeException("Default role 'User' not found"));
 
-        User user = new User(username, email, passwordHash, role);
-        return userRepository.save(user);
+        User user = new User(username, email, passwordHash);
+        user.setRole(defaultRole); // ← ОБЯЗАТЕЛЬНО!
+
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            // Обработка гонки: повторная проверка при ошибке БД
+            if (userRepository.existsByUsername(username)) {
+                throw new RuntimeException("Username already exists: " + username);
+            }
+            if (userRepository.existsByEmail(email)) {
+                throw new RuntimeException("Email already exists: " + email);
+            }
+            throw new RuntimeException("Failed to create user", e);
+        }
     }
 
     public List<UserRole> getAllRoles(){

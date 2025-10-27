@@ -11,6 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     @Autowired
@@ -21,22 +22,23 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @GetMapping("users/{id}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id){
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/users")
+    @PostMapping("/users/create")
     public ResponseEntity<?> createUser(@RequestBody Map<String, String> userData){
         try{
             String username = userData.get("username");
             String email = userData.get("email");
-            String passwordHash = userData.get("passwordHash");
-            String roleName = userData.get("roleName");
-
-            User user = userService.createUser(username, email, passwordHash, roleName);
+            String passwordHash = userData.get("password");
+//            String roleName; //= userData.get("roleName");
+            System.out.println(username + " " + email + " " + passwordHash);
+            User user = userService.createUser(username, email, passwordHash);
+            System.out.println(user);
             return ResponseEntity.ok(user);
         } catch(Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
