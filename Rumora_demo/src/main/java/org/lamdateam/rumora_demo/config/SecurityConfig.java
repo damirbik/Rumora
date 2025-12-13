@@ -14,6 +14,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -24,13 +26,19 @@ public class SecurityConfig {
             AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/auth/**").permitAll()          // авторизация — открыта
+                        .requestMatchers("/api/songs").permitAll()           // список всех треков — открыт
+                        .requestMatchers("/api/songs/**").permitAll()         // страница трека — открыта
+                        .requestMatchers("/api/search/**").permitAll()        // поиск — открыт
+                        .requestMatchers("/audio/**").permitAll()             // аудио-файлы — открыты
+                        .requestMatchers("/covers/**").permitAll()            // обложки — открыты
+                        .requestMatchers("/health").permitAll()               // health check — открыт
+                        .anyRequest().authenticated()                         // всё остальное — только для авторизованных
                 );
         return http.build();
     }
