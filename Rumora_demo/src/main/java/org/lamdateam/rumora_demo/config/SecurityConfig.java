@@ -26,7 +26,7 @@ public class SecurityConfig {
             AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-    
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/audio/**").permitAll()             // аудио-файлы — открыты
                         .requestMatchers("/covers/**").permitAll()            // обложки — открыты
                         .requestMatchers("/health").permitAll()               // health check — открыт
-                        .anyRequest().authenticated()                         // всё остальное — только для авторизованных
+                        .anyRequest().permitAll()                         // всё остальное — только для авторизованных
                 );
         return http.build();
     }
