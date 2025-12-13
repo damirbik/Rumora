@@ -2,6 +2,7 @@ package org.lamdateam.rumora_demo.service;
 
 import org.lamdateam.rumora_demo.dto.CommentDto;
 import org.lamdateam.rumora_demo.dto.SongDto;
+import org.lamdateam.rumora_demo.dto.SongSearchResultDto;
 import org.lamdateam.rumora_demo.entity.Comment;
 import org.lamdateam.rumora_demo.entity.Song;
 import org.lamdateam.rumora_demo.repository.ISongRepository;
@@ -45,5 +46,25 @@ public class SongService {
         songDto.setComments(commentDtos);
 
         return songDto;
+    }
+
+    public List<SongSearchResultDto> getAllSongs() {
+        List<Song> songs = songRepository.findAll();
+        return mapToSearchResultDto(songs);
+    }
+
+    // Вспомогательный метод (можно вынести в отдельный маппер позже)
+    private List<SongSearchResultDto> mapToSearchResultDto(List<Song> songs) {
+        List<SongSearchResultDto> dtos = new ArrayList<>();
+        for (Song song : songs) {
+            SongSearchResultDto dto = new SongSearchResultDto();
+            dto.setSongId(song.getSongId());
+            dto.setSongName(song.getSongName());
+            dto.setAuthorName(song.getAuthor().getAuthorName());
+            dto.setYearOfCreation(song.getYearOfCreation());
+            dto.setSongCover(song.getSongCover());
+            dtos.add(dto);
+        }
+        return dtos;
     }
 }
