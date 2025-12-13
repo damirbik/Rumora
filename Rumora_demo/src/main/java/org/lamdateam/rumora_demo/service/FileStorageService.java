@@ -16,44 +16,40 @@ public class FileStorageService {
     private static final String AUDIO_DIR = "uploads/audio/";
     private static final String COVERS_DIR = "uploads/covers/";
 
-    static {
-        try {
-            Files.createDirectories(Paths.get(AUDIO_DIR));
-            Files.createDirectories(Paths.get(COVERS_DIR));
-        } catch (IOException e) {
-            throw new RuntimeException("Не удалось создать папки для загрузки", e);
-        }
-    }
-
     public FileUploadResponseDto storeAudioFile(MultipartFile file) {
-        return storeFile(file, AUDIO_DIR, "audio");
+        return storeFile(file, AUDIO_DIR);
     }
 
     public FileUploadResponseDto storeCoverFile(MultipartFile file) {
-        return storeFile(file, COVERS_DIR, "covers");
+        return storeFile(file, COVERS_DIR);
     }
 
-    private FileUploadResponseDto storeFile(MultipartFile file, String dir, String type) {
-        // Валидация
+    private FileUploadResponseDto storeFile(MultipartFile file, String dir) {
         if (file.isEmpty()) {
             throw new RuntimeException("Нельзя загрузить пустой файл");
         }
 
-        // Генерация уникального имени
-        String extension = "";
+        // Создаём папку при первой загрузке (а не при старте)
+        Path dirPath = Paths.get(dir);
+        try {
+            Files.createDirectories(dirPath);
+        } catch (IOException e) {
+            throw new RuntimeException("Не удалось создать папку: " + dir, e);
+        }
+
+        // Генерация имени
         String originalName = file.getOriginalFilename();
+        String extension = "";
         if (originalName != null && originalName.contains(".")) {
             extension = originalName.substring(originalName.lastIndexOf("."));
         }
         String fileName = UUID.randomUUID().toString() + extension;
 
         try {
-            // Сохранение
-            Path filePath = Paths.get(dir).resolve(fileName);
+            Path filePath = dirPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath);
 
-            // Относительный путь для БД (как в твоей схеме!)
-            String relativePath = type + "/" + fileName;
+            String relativePath = dir + fileName;
 
             FileUploadResponseDto response = new FileUploadResponseDto();
             response.setFileName(fileName);
