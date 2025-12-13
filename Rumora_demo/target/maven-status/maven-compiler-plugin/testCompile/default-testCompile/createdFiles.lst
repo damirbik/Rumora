@@ -1,0 +1,3 @@
+org\lamdateam\rumora_demo\db\DbSchemaConstraintsTest.class
+org\lamdateam\rumora_demo\db\GenerateIdStressTest.class
+org\lamdateam\rumora_demo\RumoraDemoApplicationTests.class
