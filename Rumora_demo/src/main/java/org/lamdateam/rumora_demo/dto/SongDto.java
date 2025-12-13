@@ -56,6 +56,6 @@ public class SongDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(songId, songName, authorName, yearOfCreation, textSong, songCover, comments);
+        return Objects.hash(songId, songName, authorName, yearOfCreation, textSong, songCover, audioFile, comments);
     }
 }

@@ -43,6 +43,7 @@ public class SongService {
         songDto.setYearOfCreation(song.getYearOfCreation());
         songDto.setTextSong(song.getTextSong());
         songDto.setSongCover(song.getSongCover());
+        songDto.setAudioFile(song.getAudioFile());
         songDto.setComments(commentDtos);
 
         return songDto;
