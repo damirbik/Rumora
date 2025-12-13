@@ -43,16 +43,16 @@ public class AuthController {
             Optional<User> userOpt = userService.getUserByUsername(request.getUsername());
 
             if (userOpt.isEmpty()) {
-                System.out.println("❌ User not found in DB");
+                System.out.println("User not found in DB");
                 return ResponseEntity.status(401).body("User not found");
             }
 
             User user = userOpt.get();
-            System.out.println("✅ User found: " + user.getUsername());
+            System.out.println("User found: " + user.getUsername());
             System.out.println("User role: " + (user.getRole() != null ? user.getRole().getRoleName() : "NULL"));
 
             if (user.getRole() == null) {
-                System.out.println("❌ User has no role assigned");
+                System.out.println("User has no role assigned");
                 return ResponseEntity.status(401).body("User has no role assigned");
             }
 
@@ -68,20 +68,20 @@ public class AuthController {
             System.out.println("Password match result: " + matches);
 
             if (matches) {
-                System.out.println("✅ Authentication successful!");
+                System.out.println("Authentication successful!");
                 String token = jwtTokenProvider.generateToken(
                         user.getUsername(),
                         user.getRole().getRoleName()
                 );
-                System.out.println("✅ Token generated");
+                System.out.println("Token generated");
 
                 return ResponseEntity.ok(new AuthResponse(token, user.getUsername(), user.getRole().getRoleName()));
             } else {
-                System.out.println("❌ Passwords do not match - returning 401");
+                System.out.println("Passwords do not match - returning 401");
                 return ResponseEntity.status(401).body("Invalid credentials");
             }
         } catch (Exception e) {
-            System.out.println("❌ Exception during login: " + e.getMessage());
+            System.out.println("Exception during login: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
         }
