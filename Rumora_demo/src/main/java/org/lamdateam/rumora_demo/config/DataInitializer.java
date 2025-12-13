@@ -122,7 +122,8 @@ public class DataInitializer implements CommandLineRunner {
 
             for (int i = 0; i < trackTitles.length; i++) {
                 String title = trackTitles[i];
-                String audioFileName = String.format("%02d. %s.mp3", i + 1, title);
+                String audioFileName = String.format("%02d. %s.mp3", i + 1);
+                System.out.println(audioFileName);
                 String coverFileName = "channels4_profile.jpg";
 
                 Song song = new Song();

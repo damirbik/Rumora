@@ -8,6 +8,15 @@ public class SongSearchResultDto {
     private String authorName;
     private Integer yearOfCreation;
     private String songCover;
+    public String getAudioFile() {
+        return audioFile;
+    }
+
+    public void setAudioFile(String audioFile) {
+        this.audioFile = audioFile;
+    }
+
+    private String audioFile;
 
     public SongSearchResultDto() {}
 
@@ -31,11 +40,12 @@ public class SongSearchResultDto {
                 Objects.equals(songName, that.songName) &&
                 Objects.equals(authorName, that.authorName) &&
                 Objects.equals(yearOfCreation, that.yearOfCreation) &&
+                Objects.equals(audioFile, that.audioFile) &&
                 Objects.equals(songCover, that.songCover);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(songId, songName, authorName, yearOfCreation, songCover);
+        return Objects.hash(songId, songName, authorName, yearOfCreation, audioFile, songCover);
     }
 }
