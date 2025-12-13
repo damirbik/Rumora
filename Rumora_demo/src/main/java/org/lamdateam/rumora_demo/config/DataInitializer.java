@@ -129,10 +129,11 @@ public class DataInitializer implements CommandLineRunner {
                 song.setSongName(title);
                 song.setAuthor(channels4);
                 song.setYearOfCreation(2025);
-                song.setTextSong(""); // можно оставить пустым
+                song.setTextSong("");
                 song.setSongCover("covers/" + coverFileName);
                 song.setAudioFile("audio/" + audioFileName);
 
+                // ✅ Сохраняем каждый трек сразу
                 songRepository.save(song);
             }
             System.out.println("✅ Добавлено 17 треков от Channels4.");
