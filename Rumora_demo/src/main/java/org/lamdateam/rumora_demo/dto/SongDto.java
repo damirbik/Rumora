@@ -10,6 +10,16 @@ public class SongDto {
     private Integer yearOfCreation;
     private String textSong;
     private String songCover;
+
+    public String getAudioFile() {
+        return audioFile;
+    }
+
+    public void setAudioFile(String audioFile) {
+        this.audioFile = audioFile;
+    }
+
+    private String audioFile;
     private List<CommentDto> comments;
 
     public SongDto() {}
@@ -40,6 +50,7 @@ public class SongDto {
                 Objects.equals(yearOfCreation, songDto.yearOfCreation) &&
                 Objects.equals(textSong, songDto.textSong) &&
                 Objects.equals(songCover, songDto.songCover) &&
+                Objects.equals(audioFile, songDto.audioFile) &&
                 Objects.equals(comments, songDto.comments);
     }
 
