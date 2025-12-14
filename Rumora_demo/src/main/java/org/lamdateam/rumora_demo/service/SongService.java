@@ -65,6 +65,7 @@ public class SongService {
             dto.setYearOfCreation(song.getYearOfCreation());
             dto.setSongCover(song.getSongCover());
             dto.setAudioFile(song.getAudioFile());
+            //dto.setComments(song.getComments());
             dtos.add(dto);
         }
         return dtos;

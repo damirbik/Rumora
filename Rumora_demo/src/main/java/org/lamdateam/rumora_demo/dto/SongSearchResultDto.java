@@ -1,5 +1,6 @@
 package org.lamdateam.rumora_demo.dto;
 
+import java.util.List;
 import java.util.Objects;
 
 public class SongSearchResultDto {
@@ -17,6 +18,12 @@ public class SongSearchResultDto {
     }
 
     private String audioFile;
+
+    public List<CommentDto> getComments() {
+        return comments;
+    }
+
+    private List<CommentDto> comments;
 
     public SongSearchResultDto() {}
 
