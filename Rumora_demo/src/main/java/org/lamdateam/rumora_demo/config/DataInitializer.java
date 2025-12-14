@@ -7,10 +7,12 @@ import org.lamdateam.rumora_demo.entity.UserRole;
 import org.lamdateam.rumora_demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -39,22 +41,10 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // === 1. Создаём роли, если их нет ===
-        if (userRoleRepository.count() == 0) {
-            UserRole userRole = new UserRole();
-            userRole.setRoleId(1);
-            userRole.setRoleName("User");
-
-            UserRole moderRole = new UserRole();
-            moderRole.setRoleId(2);
-            moderRole.setRoleName("Moder");
-
-            UserRole adminRole = new UserRole();
-            adminRole.setRoleId(3);
-            adminRole.setRoleName("Admin");
-
-            userRoleRepository.saveAll(Arrays.asList(userRole, moderRole, adminRole));
-        }
+        // === 1. Создаём роли, если их нет (без ID) ===
+        createRoleIfNotExists("User");
+        createRoleIfNotExists("Moder");
+        createRoleIfNotExists("Admin");
 
         // === 2. Создаём пользователей, если их нет ===
         if (userRepository.count() == 0) {
@@ -69,10 +59,10 @@ public class DataInitializer implements CommandLineRunner {
             UserRole moderRole = moderOpt.get();
 
             // Админы
-            User admin1 = new User("admin1",  passwordEncoder.encode("admin123"));
+            User admin1 = new User("admin1", passwordEncoder.encode("admin123"));
             admin1.setRole(adminRole);
 
-            User superadmin = new User("superadmin",  passwordEncoder.encode("superpass"));
+            User superadmin = new User("superadmin", passwordEncoder.encode("superpass"));
             superadmin.setRole(adminRole);
 
             // Модераторы
@@ -82,7 +72,7 @@ public class DataInitializer implements CommandLineRunner {
             User musicmod = new User("musicmod", passwordEncoder.encode("musicpass"));
             musicmod.setRole(moderRole);
 
-            userRepository.saveAll(Arrays.asList(admin1, superadmin, moder1, musicmod));
+            userRepository.saveAll(List.of(admin1, superadmin, moder1, musicmod));
             System.out.println("✅ Создано 2 админа и 2 модератора.");
         }
 
@@ -120,10 +110,10 @@ public class DataInitializer implements CommandLineRunner {
                     "Lion's Den"
             };
 
+            List<Song> songsToSave = new ArrayList<>();
             for (int i = 0; i < trackTitles.length; i++) {
                 String title = trackTitles[i];
-                String audioFileName = String.format("%02d. %s.mp3", i + 1);
-                System.out.println(audioFileName);
+                String audioFileName = String.format("%02d. %s.mp3", i + 1, title);
                 String coverFileName = "channels4_profile.jpg";
 
                 Song song = new Song();
@@ -134,10 +124,22 @@ public class DataInitializer implements CommandLineRunner {
                 song.setSongCover("covers/" + coverFileName);
                 song.setAudioFile("audio/" + audioFileName);
 
-                // ✅ Сохраняем каждый трек сразу
-                songRepository.save(song);
+                songsToSave.add(song);
             }
+            songRepository.saveAll(songsToSave);
             System.out.println("✅ Добавлено 17 треков от Channels4.");
+        }
+    }
+
+    // Вспомогательный метод: создать роль, если её нет
+    private void createRoleIfNotExists(String roleName) {
+        try {
+            UserRole role = new UserRole();
+            role.setRoleName(roleName);
+            userRoleRepository.save(role);
+            System.out.println("✅ Создана роль: " + roleName);
+        } catch (DataIntegrityViolationException e) {
+            System.out.println("⚠️ Роль " + roleName + " уже существует.");
         }
     }
 }

@@ -1,38 +1,39 @@
-# Этап 1: Сборка приложения
+# Этап 1: Сборка
 FROM maven:3.9-eclipse-temurin-21 AS build
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем только то, что нужно для сборки (с кэшированием)
+# Копируем только то, что нужно для сборки
 COPY pom.xml .
 COPY src ./src
 
-# Собираем JAR без тестов и DevTools
-RUN mvn clean package -DskipTests -Dspring-boot.build-image.skip=true
+# Собираем JAR
+RUN mvn clean package -DskipTests
 
-# Этап 2: Финальный образ
+# Этап 2: Запуск
 FROM eclipse-temurin:21-jre-alpine
 
-# Безопасность: создаём непривилегированного пользователя
+# Создаём непривилегированного пользователя
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
 
 # Рабочая папка
 WORKDIR /app
 
-# Копируем JAR из этапа сборки (любое имя)
+# Копируем JAR
 COPY --from=build /app/target/*.jar app.jar
-COPY uploads ./uploads
+
+# Копируем демо-файлы (если есть)
+COPY uploads /app/uploads
 
 # Меняем владельца
-RUN chown appuser:appgroup app.jar
+RUN chown -R appuser:appgroup /app
 
 # Переключаемся на безопасного пользователя
 USER appuser
 
-# Порт приложения
+# Порт
 EXPOSE 8080
 
-# Точка входа
+# Запуск
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]

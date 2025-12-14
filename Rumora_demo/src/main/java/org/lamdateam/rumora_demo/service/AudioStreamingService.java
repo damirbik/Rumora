@@ -3,10 +3,14 @@ package org.lamdateam.rumora_demo.service;
 import org.lamdateam.rumora_demo.entity.Song;
 import org.lamdateam.rumora_demo.repository.ISongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -14,6 +18,9 @@ import java.nio.file.Paths;
 public class AudioStreamingService {
 
     private final ISongRepository songRepository;
+
+    @Value("${app.uploads.dir:/app/uploads}")
+    private String uploadsDir;
 
     @Autowired
     public AudioStreamingService(ISongRepository songRepository) {
@@ -24,11 +31,11 @@ public class AudioStreamingService {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new RuntimeException("Трек не найден"));
 
+        Path filePath = Paths.get(uploadsDir).resolve(song.getAudioFile()).normalize();
+
         try {
-            Path filePath = Paths.get(song.getAudioFile()).toAbsolutePath().normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
+            if (Files.exists(filePath) && Files.isReadable(filePath)) {
+                return new UrlResource(filePath.toUri());
             } else {
                 throw new RuntimeException("Аудиофайл не найден: " + filePath);
             }
