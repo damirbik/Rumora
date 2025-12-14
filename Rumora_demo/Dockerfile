@@ -23,6 +23,7 @@ WORKDIR /app
 
 # Копируем JAR из этапа сборки (любое имя)
 COPY --from=build /app/target/*.jar app.jar
+COPY uploads ./uploads
 
 # Меняем владельца
 RUN chown appuser:appgroup app.jar

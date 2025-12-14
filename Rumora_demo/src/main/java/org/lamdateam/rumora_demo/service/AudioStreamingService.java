@@ -25,7 +25,7 @@ public class AudioStreamingService {
                 .orElseThrow(() -> new RuntimeException("Трек не найден"));
 
         try {
-            Path filePath = Paths.get("uploads").resolve(song.getAudioFile()).normalize();
+            Path filePath = Paths.get(song.getAudioFile()).toAbsolutePath().normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
