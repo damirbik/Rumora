@@ -1,15 +1,17 @@
 package org.lamdateam.rumora_demo.controller;
 
+import org.lamdateam.rumora_demo.dto.SongDto;
 import org.lamdateam.rumora_demo.service.FavoriteSongService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/favorites")
 @CrossOrigin(origins = "http://localhost:3000")
-
 public class FavoriteController {
 
     private final FavoriteSongService favoriteSongService;
@@ -31,5 +33,13 @@ public class FavoriteController {
         Long userId = Long.parseLong(auth.getName());
         favoriteSongService.removeFromFavorites(userId, songId);
         return ResponseEntity.ok().build();
+    }
+
+    // === НОВЫЙ МЕТОД ===
+    @GetMapping
+    public ResponseEntity<List<SongDto>> getFavoriteSongs(Authentication auth) {
+        Long userId = Long.parseLong(auth.getName());
+        List<SongDto> favoriteSongs = favoriteSongService.getFavoriteSongsByUserId(userId);
+        return ResponseEntity.ok(favoriteSongs);
     }
 }
