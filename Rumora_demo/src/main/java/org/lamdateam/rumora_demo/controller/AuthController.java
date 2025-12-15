@@ -14,10 +14,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
@@ -33,12 +35,10 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
-        System.out.println(">>> LOGIN CONTROLLER CALLED <<<");
-        System.out.println("Username: " + request.getUsername());
-        System.out.println("Password: " + request.getPassword());
+    // === AUTHENTICATION ENDPOINTS ===
 
+    @PostMapping("/auth/login")
+    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         try {
             Optional<User> userOpt = userService.getUserByUsername(request.getUsername());
 
@@ -87,7 +87,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<?> register(@RequestBody AuthRequest request) {
         try {
             if (userService.existsByUsername(request.getUsername())) {
@@ -98,5 +98,38 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    // === USER MANAGEMENT ENDPOINTS ===
+
+    @GetMapping("/users")
+    public List<User> getAllUsers(){
+        return userService.getAllUsers();
+    }
+
+    @GetMapping("/users/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id){
+        return userService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/users/create")
+    public ResponseEntity<?> createUser(@RequestBody Map<String, String> userData){
+        try{
+            String username = userData.get("username");
+            String passwordHash = userData.get("password");
+            User user = userService.createUser(username, passwordHash);
+            return ResponseEntity.ok(user);
+        } catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // ❌ УДАЛЁН метод /users/login — он был небезопасен и дублировал логику
+
+    @GetMapping("/roles")
+    public List<?> getAllRoles(){
+        return userService.getAllRoles();
     }
 }
