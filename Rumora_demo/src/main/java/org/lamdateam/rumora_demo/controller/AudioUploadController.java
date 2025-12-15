@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/upload")
+@CrossOrigin(origins = "http://localhost:3000")
+
 public class AudioUploadController {
 
     private final FileStorageService fileStorageService;

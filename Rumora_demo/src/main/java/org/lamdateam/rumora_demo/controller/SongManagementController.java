@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/songs")
+@CrossOrigin(origins = "http://localhost:3000")
+
 public class SongManagementController {
 
     private final SongManagementService songManagementService;
