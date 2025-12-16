@@ -2,6 +2,7 @@ package org.lamdateam.rumora_demo.controller;
 
 import org.lamdateam.rumora_demo.dto.AuthRequest;
 import org.lamdateam.rumora_demo.dto.AuthResponse;
+import org.lamdateam.rumora_demo.dto.UpdateUserRequestDto;
 import org.lamdateam.rumora_demo.entity.User;
 import org.lamdateam.rumora_demo.security.JwtTokenProvider;
 import org.lamdateam.rumora_demo.service.UserService;
@@ -122,6 +123,20 @@ public class AuthController {
             User user = userService.createUser(username, passwordHash);
             return ResponseEntity.ok(user);
         } catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateUser(
+            @RequestBody UpdateUserRequestDto request,
+            Authentication auth
+    ) {
+        try {
+            Long userId = Long.parseLong(auth.getName());
+            userService.updateUserById(userId, request.getUsername(), request.getPassword());
+            return ResponseEntity.ok("Профиль успешно обновлён");
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

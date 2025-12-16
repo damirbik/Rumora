@@ -64,6 +64,30 @@ public class UserService {
         }
     }
 
+    public void updateUserById(Long userId, String newUsername, String newPassword) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("Пользователь не найден");
+        }
+
+        User user = userOpt.get();
+
+        if (newUsername != null && !newUsername.equals(user.getUsername())) {
+            // Проверяем, что новое имя не занято
+            if (userRepository.existsByUsername(newUsername)) {
+                throw new RuntimeException("Имя пользователя уже занято");
+            }
+            user.setUsername(newUsername);
+        }
+
+        if (newPassword != null && !newPassword.isEmpty()) {
+            // Хэшируем новый пароль
+            user.setPasswordHash(passwordEncoder.encode(newPassword));
+        }
+
+        userRepository.save(user);
+    }
+
     public List<UserRole> getAllRoles(){
         return roleRepository.findAll();
     }
