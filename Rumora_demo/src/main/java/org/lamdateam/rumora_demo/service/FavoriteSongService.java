@@ -71,4 +71,8 @@ public class FavoriteSongService {
         }
         return dtos;
     }
+
+    public boolean isSongInFavorites(Long userId, Integer songId) {
+        return favoriteSongRepository.existsByUserIdAndSongId(userId, songId);
+    }
 }

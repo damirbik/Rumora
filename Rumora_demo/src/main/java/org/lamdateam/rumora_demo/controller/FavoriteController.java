@@ -35,6 +35,13 @@ public class FavoriteController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/check/{songId}")
+    public ResponseEntity<Boolean> isSongInFavorites(@PathVariable Integer songId, Authentication auth) {
+        Long userId = Long.parseLong(auth.getName());
+        boolean isInFavorites = favoriteSongService.isSongInFavorites(userId, songId);
+        return ResponseEntity.ok(isInFavorites);
+    }
+
     // === НОВЫЙ МЕТОД ===
     @GetMapping
     public ResponseEntity<List<SongDto>> getFavoriteSongs(Authentication auth) {

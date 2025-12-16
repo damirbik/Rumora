@@ -11,4 +11,5 @@ import java.util.List;
 public interface IFavoriteSongRepository extends JpaRepository<FavoriteSong, FavoriteSongId> {
     List<FavoriteSong> findByUserId(Long userId);
 
+    boolean existsByUserIdAndSongId(Long userId, Integer songId);
 }
