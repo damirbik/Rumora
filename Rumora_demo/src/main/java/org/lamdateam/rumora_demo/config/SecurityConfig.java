@@ -37,7 +37,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/search/**").permitAll()        // поиск — открыт
                         .requestMatchers("/audio/**").permitAll()             // аудио-файлы — открыты
                         .requestMatchers("/covers/**").permitAll()            // обложки — открыты
-                        .requestMatchers("/health").permitAll()               // health check — открыт
+                        .requestMatchers("/health").permitAll()
+                        .requestMatchers("/api/favorites/**").permitAll()// health check — открыт
                         .anyRequest().permitAll()                         // всё остальное — только для авторизованных
                 );
         return http.build();
