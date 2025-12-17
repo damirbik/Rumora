@@ -45,6 +45,14 @@ public class FavoriteController {
     // === НОВЫЙ МЕТОД ===
     @GetMapping
     public ResponseEntity<List<SongDto>> getFavoriteSongs(Authentication auth) {
+        System.out.println("Auth object: " + auth); // ← Добавь
+        if (auth == null || auth.getPrincipal() == null) {
+            System.out.println("Auth is null or principal is null");
+            return ResponseEntity.status(401).build();
+        }
+        System.out.println("Authenticated user: " + auth.getName()); // ← Добавь
+        System.out.println("Authorities: " + auth.getAuthorities()); // ← Добавь
+
         Long userId = Long.parseLong(auth.getName());
         List<SongDto> favoriteSongs = favoriteSongService.getFavoriteSongsByUserId(userId);
         return ResponseEntity.ok(favoriteSongs);
