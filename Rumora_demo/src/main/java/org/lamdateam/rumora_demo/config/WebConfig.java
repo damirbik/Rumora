@@ -1,6 +1,7 @@
 package org.lamdateam.rumora_demo.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -16,5 +17,14 @@ public class WebConfig implements WebMvcConfigurer {
         // Раздача аудио: /uploads/audio/... → uploads/audio/
         registry.addResourceHandler("/uploads/audio/**")
                 .addResourceLocations("file:uploads/audio/");
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**") // ← Обязательно должен покрывать /api/favorites/**
+                .allowedOrigins("http://localhost:3000", "http://127.0.0.1:3000") // Добавь локальный фронт
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // ← Обязательно OPTIONS
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }
