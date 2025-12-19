@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -33,39 +34,55 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        // ===== ОТЛАДКА: логируем каждый запрос =====
+        System.out.println("[DEBUG] JwtAuthenticationFilter invoked");
         String authHeader = request.getHeader("Authorization");
+        System.out.println("[DEBUG] Authorization header: " + authHeader);
 
-        // Если заголовка нет или не начинается с "Bearer ", пропускаем
+        // Пропускаем, если нет заголовка или неверный формат
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("[DEBUG] No valid Authorization header — skipping JWT");
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring(7); // Убираем "Bearer "
+        String token = authHeader.substring(7);
+        System.out.println("[DEBUG] Token (first 30 chars): " + token.substring(0, Math.min(30, token.length())) + "...");
 
         // Проверяем валидность токена
         if (!tokenProvider.validateToken(token)) {
+            System.out.println("[DEBUG] Invalid or expired token — skipping authentication");
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Извлекаем username и роль из токена
-        String username = tokenProvider.getUsernameFromToken(token);
-        String role = tokenProvider.getRoleFromToken(token); // ← Добавим этот метод в JwtTokenProvider
+        try {
+            // Извлекаем username и роль из токена
+            String username = tokenProvider.getUsernameFromToken(token);
+            String role = tokenProvider.getRoleFromToken(token);
+            System.out.println("[DEBUG] Extracted username: " + username + ", role: " + role);
 
-        // Загружаем UserDetails (пользователя)
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            // Загружаем пользователя
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            System.out.println("[DEBUG] User loaded successfully: " + userDetails.getUsername());
 
-        // Создаём authorities: "ROLE_Admin", "ROLE_User" и т.д.
-        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                userDetails, null, Collections.singletonList(authority)
-        );
+            // Создаём authorities
+            GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, Collections.singletonList(authority)
+            );
 
-        // Устанавливаем аутентификацию в SecurityContext
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+            // Сохраняем аутентификацию
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+            System.out.println("[DEBUG] Authentication set in SecurityContext");
 
-        // Продолжаем цепочку фильтров
+        } catch (UsernameNotFoundException e) {
+            System.err.println("[ERROR] User not found during JWT auth: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("[ERROR] Unexpected error in JWT filter: " + e.getMessage());
+            e.printStackTrace(System.err);
+        }
+
         filterChain.doFilter(request, response);
     }
 }
