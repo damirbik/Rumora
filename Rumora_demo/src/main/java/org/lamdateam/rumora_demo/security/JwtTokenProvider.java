@@ -17,13 +17,14 @@ public class JwtTokenProvider {
     @Value("${jwt.expiration:86400000}") // 24 часа
     private int jwtExpiration;
 
-    public String generateToken(String username, String roleName) {
+    public String generateToken(Long userId, String username, String roleName) {
         System.out.println("Generating token for: " + username + " with role: " + roleName);
 
         Date expiryDate = new Date(System.currentTimeMillis() + jwtExpiration);
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(userId.toString())
+                .claim("username", username)
                 .claim("role", roleName)
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)

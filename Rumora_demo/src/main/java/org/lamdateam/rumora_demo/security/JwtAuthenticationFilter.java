@@ -25,7 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtTokenProvider tokenProvider;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -58,12 +58,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             // Извлекаем username и роль из токена
-            String username = tokenProvider.getUsernameFromToken(token);
+            String userIdStr = tokenProvider.getUsernameFromToken(token); // ← Это теперь user_id
+            Long userId = Long.parseLong(userIdStr);
             String role = tokenProvider.getRoleFromToken(token);
-            System.out.println("[DEBUG] Extracted username: " + username + ", role: " + role);
+            System.out.println("[DEBUG] Extracted username: " + userIdStr + ", role: " + role);
 
             // Загружаем пользователя
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = customUserDetailsService.loadUserById(userId);
             System.out.println("[DEBUG] User loaded successfully: " + userDetails.getUsername());
 
             // Создаём authorities

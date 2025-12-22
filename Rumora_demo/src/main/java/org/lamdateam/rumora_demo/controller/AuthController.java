@@ -71,6 +71,7 @@ public class AuthController {
             if (matches) {
                 System.out.println("Authentication successful!");
                 String token = jwtTokenProvider.generateToken(
+                        user.getUserId(),
                         user.getUsername(),
                         user.getRole().getRoleName()
                 );
