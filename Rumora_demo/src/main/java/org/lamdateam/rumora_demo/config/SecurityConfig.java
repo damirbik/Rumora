@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ← Добавь это
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // ← ЭТО ОБЯЗАТЕЛЬНО
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/songs").authenticated()
                         .requestMatchers("/api/songs/**").authenticated()
