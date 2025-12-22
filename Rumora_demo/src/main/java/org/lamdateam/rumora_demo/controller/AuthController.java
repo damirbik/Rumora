@@ -4,6 +4,7 @@ import org.lamdateam.rumora_demo.dto.AuthRequest;
 import org.lamdateam.rumora_demo.dto.AuthResponse;
 import org.lamdateam.rumora_demo.dto.UpdateUserRequestDto;
 import org.lamdateam.rumora_demo.entity.User;
+import org.lamdateam.rumora_demo.repository.IUserRepository;
 import org.lamdateam.rumora_demo.security.JwtTokenProvider;
 import org.lamdateam.rumora_demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class AuthController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IUserRepository userRepository;
 
     // === AUTHENTICATION ENDPOINTS ===
 
@@ -92,7 +96,7 @@ public class AuthController {
     @PostMapping("/auth/register")
     public ResponseEntity<?> register(@RequestBody AuthRequest request) {
         try {
-            if (userService.existsByUsername(request.getUsername())) {
+            if (userRepository.findByUsername(request.getUsername()).isPresent()) {
                 return ResponseEntity.badRequest().body("Username already exists");
             }
             User user = userService.createUser(request.getUsername(), request.getPassword());
