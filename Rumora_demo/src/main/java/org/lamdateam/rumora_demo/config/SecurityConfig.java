@@ -45,11 +45,11 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // ← ЭТО ОБЯЗАТЕЛЬНО
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/songs").permitAll()
-                        .requestMatchers("/api/songs/**").permitAll()
-                        .requestMatchers("/api/search/**").permitAll()
-                        .requestMatchers("/audio/**").permitAll()
-                        .requestMatchers("/covers/**").permitAll()
+                        .requestMatchers("/api/songs").authenticated()
+                        .requestMatchers("/api/songs/**").authenticated()
+                        .requestMatchers("/api/search/**").authenticated()
+                        .requestMatchers("/audio/**").authenticated()
+                        .requestMatchers("/covers/**").authenticated()
                         .requestMatchers("/health").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/api/favorites/**").permitAll() // ← Это уже есть
                         .requestMatchers("/api/favorites/**").authenticated()

@@ -2,6 +2,8 @@ package org.lamdateam.rumora_demo.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "comments")
 public class Comment {
@@ -11,24 +13,28 @@ public class Comment {
     @Column(name = "comment_id")
     private Integer commentId;
 
-    @Column(name = "comment_text", nullable = false)
+    @Column(name = "comment_text", nullable = false, columnDefinition = "TEXT")
     private String commentText;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "song_id", nullable = false)
-    private Song song;
+    // ✅ Простое поле song_id (Integer), НЕ сущность!
+    @Column(name = "song_id", nullable = false)
+    private Integer songId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    // ✅ Простое поле user_id (Long), НЕ сущность!
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_comment_id")
-    private Comment relatedComment; // для ответов на комментарии
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
+    // Опционально: ссылка на родительский комментарий (для ответов)
+    @Column(name = "related_comment_id")
+    private Integer relatedCommentId;
 
+    // Конструкторы
     public Comment() {}
 
+    // Геттеры и сеттеры
     public Integer getCommentId() {
         return commentId;
     }
@@ -45,27 +51,35 @@ public class Comment {
         this.commentText = commentText;
     }
 
-    public Song getSong() {
-        return song;
+    public Integer getSongId() {
+        return songId;
     }
 
-    public void setSong(Song song) {
-        this.song = song;
+    public void setSongId(Integer songId) {
+        this.songId = songId;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public Comment getRelatedComment() {
-        return relatedComment;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setRelatedComment(Comment relatedComment) {
-        this.relatedComment = relatedComment;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Integer getRelatedCommentId() {
+        return relatedCommentId;
+    }
+
+    public void setRelatedCommentId(Integer relatedCommentId) {
+        this.relatedCommentId = relatedCommentId;
     }
 }
