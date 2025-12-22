@@ -20,10 +20,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private IUserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findUserWithRoleByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
+    public UserDetails loadUserByUserId(Long userId) throws UsernameNotFoundException {
+        User user = userRepository.findUserWithRoleById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userId));
 
         GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleName());
 
@@ -37,6 +37,20 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userId));
+
+        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleName());
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPasswordHash(),
+                Collections.singletonList(authority)
+        );
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findUserWithRoleByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
         GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleName());
 
