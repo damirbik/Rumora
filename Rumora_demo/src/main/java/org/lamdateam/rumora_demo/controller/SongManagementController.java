@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/admin/songs") // ← базовый путь
-@CrossOrigin(origins = "http://localhost:3000, remjest-rumora-5a51.twc1.net")
+@CrossOrigin(origins = "http://localhost:3000, https://remjest-rumora-5a51.twc1.net")
 public class SongManagementController {
 
     private final SongManagementService songManagementService;
