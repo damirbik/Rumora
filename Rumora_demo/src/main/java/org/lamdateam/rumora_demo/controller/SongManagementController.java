@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -37,5 +38,21 @@ public class SongManagementController {
     public ResponseEntity<Void> deleteSong(@PathVariable Integer songId) {
         songManagementService.deleteSong(songId);
         return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasRole('Admin')")
+    @PostMapping("/songs")
+    public ResponseEntity<SongDto> addSong(
+            @RequestParam String songName,
+            @RequestParam String authorName,
+            @RequestParam Integer yearOfCreation,
+            @RequestParam(required = false) String textSong,
+            @RequestParam MultipartFile songCover,   // обложка
+            @RequestParam MultipartFile audioFile    // MP3
+    ) {
+        SongDto saved = songManagementService.addSong(
+                songName, authorName, yearOfCreation, textSong, songCover, audioFile
+        );
+        return ResponseEntity.ok(saved);
     }
 }

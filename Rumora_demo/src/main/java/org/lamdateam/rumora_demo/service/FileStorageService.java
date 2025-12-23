@@ -53,7 +53,7 @@ public class FileStorageService {
 
             FileUploadResponseDto response = new FileUploadResponseDto();
             response.setFileName(fileName);
-            response.setFileDownloadUri("/uploads/" + relativePath);
+            response.setFileDownloadUri("/" + relativePath);
             response.setSize(file.getSize());
 
             return response;
