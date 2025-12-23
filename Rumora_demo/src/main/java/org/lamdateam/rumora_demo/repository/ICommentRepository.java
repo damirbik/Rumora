@@ -10,4 +10,5 @@ import java.util.List;
 public interface ICommentRepository extends JpaRepository<Comment, Integer> {
     List<Comment> findBySongId(Integer songId);
 
+    boolean existsById(Integer commentId);
 }

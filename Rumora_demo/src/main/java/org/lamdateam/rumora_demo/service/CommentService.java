@@ -55,20 +55,10 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    /**
-     * Удаляет комментарий по ID.
-     */
     public void deleteComment(Integer commentId) {
         if (!commentRepository.existsById(commentId)) {
             throw new RuntimeException("Comment with ID " + commentId + " not found");
         }
         commentRepository.deleteById(commentId);
     }
-
-    // Можно добавить методы для получения комментариев по треку, если нужно:
-    /*
-    public List<Comment> getCommentsBySongId(Integer songId) {
-        return commentRepository.findBySongId(songId);
-    }
-    */
 }

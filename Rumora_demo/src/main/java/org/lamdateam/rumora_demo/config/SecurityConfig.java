@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/songs/**").authenticated()
                         .requestMatchers("/api/search/**").authenticated()
                         .requestMatchers("/api/audio/**").permitAll()
+                        .requestMatchers("/debug/comments").permitAll()
                         .requestMatchers("/covers/**").permitAll()
                         .requestMatchers("/health").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/api/favorites/**").permitAll() // ← Это уже есть
