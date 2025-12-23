@@ -35,22 +35,31 @@ public class SongManagementService {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new RuntimeException("Трек не найден"));
 
-        song.setSongName(songDto.getSongName());
-        song.setYearOfCreation(songDto.getYearOfCreation());
-        song.setTextSong(songDto.getTextSong() != null ? songDto.getTextSong() : "");
-        song.setSongCover(songDto.getSongCover());
-        song.setAudioFile(songDto.getAudioFile());
+        // Обновляем ТОЛЬКО те поля, которые переданы (не null)
+        if (songDto.getSongName() != null) {
+            song.setSongName(songDto.getSongName());
+        }
+        if (songDto.getYearOfCreation() != null) {
+            song.setYearOfCreation(songDto.getYearOfCreation());
+        }
+        if (songDto.getTextSong() != null) {
+            song.setTextSong(songDto.getTextSong());
+        }
+        // ⚠️ НЕ обновляем songCover и audioFile здесь!
+        // Они должны обновляться отдельно
 
-        Author author = authorRepository.findByAuthorName(songDto.getAuthorName())
-                .orElseGet(() -> {
-                    Author newAuthor = new Author();
-                    newAuthor.setAuthorName(songDto.getAuthorName());
-                    return authorRepository.save(newAuthor);
-                });
-        song.setAuthor(author);
+        // Обновляем автора, если передано
+        if (songDto.getAuthorName() != null && !songDto.getAuthorName().trim().isEmpty()) {
+            Author author = authorRepository.findByAuthorName(songDto.getAuthorName())
+                    .orElseGet(() -> {
+                        Author newAuthor = new Author();
+                        newAuthor.setAuthorName(songDto.getAuthorName());
+                        return authorRepository.save(newAuthor);
+                    });
+            song.setAuthor(author);
+        }
 
         Song saved = songRepository.save(song);
-
         return convertToDto(saved);
     }
 
