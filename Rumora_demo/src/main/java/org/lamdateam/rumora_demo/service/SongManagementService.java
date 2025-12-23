@@ -63,6 +63,30 @@ public class SongManagementService {
         return convertToDto(saved);
     }
 
+    public SongDto updateSongCover(Integer songId, MultipartFile newCover) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new RuntimeException("Трек не найден"));
+
+        FileUploadResponseDto coverResponse = fileStorageService.storeCoverFile(newCover);
+        song.setSongCover(coverResponse.getFileDownloadUri());
+
+        Song saved = songRepository.save(song);
+        return convertToDto(saved);
+    }
+
+    public SongDto updateSongAudio(Integer songId, MultipartFile newAudio) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new RuntimeException("Трек не найден"));
+
+        FileUploadResponseDto audioResponse = fileStorageService.storeAudioFile(newAudio);
+        song.setAudioFile(audioResponse.getFileDownloadUri());
+
+        Song saved = songRepository.save(song);
+        return convertToDto(saved);
+    }
+
+
+
     /**
      * Удаляет трек по ID
      */

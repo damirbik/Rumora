@@ -41,6 +41,26 @@ public class SongManagementController {
     }
 
     @PreAuthorize("hasRole('Admin')")
+    @PostMapping("/songs/{songId}/cover")
+    public ResponseEntity<SongDto> updateCover(
+            @PathVariable Integer songId,
+            @RequestParam MultipartFile songCover
+    ) {
+        SongDto updated = songManagementService.updateSongCover(songId, songCover);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PreAuthorize("hasRole('Admin')")
+    @PostMapping("/songs/{songId}/audio")
+    public ResponseEntity<SongDto> updateAudio(
+            @PathVariable Integer songId,
+            @RequestParam MultipartFile audioFile
+    ) {
+        SongDto updated = songManagementService.updateSongAudio(songId, audioFile);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PreAuthorize("hasRole('Admin')")
     @PostMapping("/songs")
     public ResponseEntity<SongDto> addSong(
             @RequestParam String songName,
