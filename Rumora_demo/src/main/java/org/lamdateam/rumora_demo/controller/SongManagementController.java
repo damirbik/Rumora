@@ -1,11 +1,13 @@
 package org.lamdateam.rumora_demo.controller;
 
+import org.lamdateam.rumora_demo.dto.SongDto;
 import org.lamdateam.rumora_demo.entity.Song;
 import org.lamdateam.rumora_demo.service.SongManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/admin/songs")
@@ -22,9 +24,11 @@ public class SongManagementController {
 
     @PreAuthorize("hasAnyRole('Moder', 'Admin')")
     @PutMapping("/{songId}")
-    public ResponseEntity<Song> updateSong(@PathVariable Integer songId, @RequestBody Song song) {
-        song.setSongId(songId);
-        Song updated = songManagementService.updateSong(song);
+    public ResponseEntity<SongDto> updateSong(
+            @PathVariable Integer songId,
+            @RequestBody SongDto songDto  // ← Тип: SongDto, имя: songDto
+    ) {
+        SongDto updated = songManagementService.updateSong(songId, songDto);
         return ResponseEntity.ok(updated);
     }
 
