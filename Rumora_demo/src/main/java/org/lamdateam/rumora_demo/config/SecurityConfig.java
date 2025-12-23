@@ -49,8 +49,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/songs").authenticated()
                         .requestMatchers("/api/songs/**").authenticated()
                         .requestMatchers("/api/search/**").authenticated()
-                        .requestMatchers("/audio/**").authenticated()
-                        .requestMatchers("/covers/**").authenticated()
+                        .requestMatchers("/audio/**").permitAll()
+                        .requestMatchers("/covers/**").permitAll()
                         .requestMatchers("/health").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/api/favorites/**").permitAll() // ← Это уже есть
                         .requestMatchers("/api/favorites/**").authenticated()
