@@ -13,8 +13,8 @@ import java.util.UUID;
 @Service
 public class FileStorageService {
 
-    private static final String AUDIO_DIR = "uploads/audio/";
-    private static final String COVERS_DIR = "uploads/covers/";
+    private static final String AUDIO_DIR = "/audio/";
+    private static final String COVERS_DIR = "/covers/";
 
     public FileUploadResponseDto storeAudioFile(MultipartFile file) {
         return storeFile(file, AUDIO_DIR);
