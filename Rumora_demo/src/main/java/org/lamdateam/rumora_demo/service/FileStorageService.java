@@ -15,55 +15,52 @@ import java.util.UUID;
 public class FileStorageService {
 
     @Value("${file.upload-dir:uploads}")
-    private String uploadBaseDir;
-
-    private static final String UPLOAD_BASE_DIR = "uploads";
-    private static final String AUDIO_DIR = UPLOAD_BASE_DIR + "/audio/";
-    private static final String COVERS_DIR = UPLOAD_BASE_DIR + "/covers/";
+    private String uploadBaseDir; // например: "uploads"
 
     public FileUploadResponseDto storeAudioFile(MultipartFile file) {
-        return storeFile(file, AUDIO_DIR);
+        return storeFile(file, "audio");
     }
 
     public FileUploadResponseDto storeCoverFile(MultipartFile file) {
-        return storeFile(file, COVERS_DIR);
+        return storeFile(file, "covers");
     }
 
-    private FileUploadResponseDto storeFile(MultipartFile file, String dir) {
+    private FileUploadResponseDto storeFile(MultipartFile file, String subDir) {
         if (file.isEmpty()) {
             throw new RuntimeException("Нельзя загрузить пустой файл");
         }
 
-        // Создаём папку при первой загрузке (а не при старте)
-        Path dirPath = Paths.get(dir);
+        String fullDir = uploadBaseDir + "/" + subDir;
+        Path dirPath = Paths.get(fullDir);
+
         try {
             Files.createDirectories(dirPath);
         } catch (IOException e) {
-            throw new RuntimeException("Не удалось создать папку: " + dir, e);
+            throw new RuntimeException("Не удалось создать директорию: " + fullDir, e);
         }
 
-        // Генерация имени
         String originalName = file.getOriginalFilename();
         String extension = "";
         if (originalName != null && originalName.contains(".")) {
             extension = originalName.substring(originalName.lastIndexOf("."));
         }
         String fileName = UUID.randomUUID().toString() + extension;
+        Path filePath = dirPath.resolve(fileName);
 
         try {
-            Path filePath = dirPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath);
-
-            String relativePath = dir + fileName;
-
-            FileUploadResponseDto response = new FileUploadResponseDto();
-            response.setFileName(fileName);
-            response.setFileDownloadUri(relativePath);
-            response.setSize(file.getSize());
-
-            return response;
         } catch (IOException e) {
             throw new RuntimeException("Не удалось сохранить файл: " + fileName, e);
         }
+
+        // ✅ ВАЖНО: возвращаем путь БЕЗ "uploads/"
+        String relativePath = subDir + "/" + fileName;
+
+        FileUploadResponseDto response = new FileUploadResponseDto();
+        response.setFileName(fileName);
+        response.setFileDownloadUri(relativePath); // ← "covers/xxx.jpg"
+        response.setSize(file.getSize());
+
+        return response;
     }
 }
