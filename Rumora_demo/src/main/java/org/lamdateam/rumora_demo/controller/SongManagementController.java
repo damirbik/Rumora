@@ -67,8 +67,8 @@ public class SongManagementController {
             @RequestParam String authorName,
             @RequestParam Integer yearOfCreation,
             @RequestParam(required = false) String textSong,
-            @RequestParam MultipartFile songCover,   // обложка
-            @RequestParam MultipartFile audioFile    // MP3
+            @RequestParam(required = false) MultipartFile songCover,
+            @RequestParam(required = false) MultipartFile audioFile
     ) {
         SongDto saved = songManagementService.addSong(
                 songName, authorName, yearOfCreation, textSong, songCover, audioFile
