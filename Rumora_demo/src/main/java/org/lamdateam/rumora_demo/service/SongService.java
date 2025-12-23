@@ -45,6 +45,9 @@ public class SongService {
         List<CommentDto> commentDtos = comments.stream().map(comment -> {
             CommentDto dto = new CommentDto();
 
+            // 🔑 ОБЯЗАТЕЛЬНО: устанавливаем ID комментария!
+            dto.setCommentId(comment.getCommentId());
+
             // Получаем имя автора по userId
             String authorName = userRepository.findById(comment.getUserId())
                     .map(User::getUsername)
@@ -54,7 +57,6 @@ public class SongService {
             dto.setText(comment.getCommentText());
             dto.setCreatedAt(comment.getCreatedAt());
 
-            // Если комментарий — ответ на другой
             if (comment.getRelatedCommentId() != null) {
                 dto.setReplyToCommentId(comment.getRelatedCommentId());
             }
