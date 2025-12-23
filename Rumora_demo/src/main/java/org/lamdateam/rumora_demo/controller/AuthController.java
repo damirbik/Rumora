@@ -1,5 +1,6 @@
 package org.lamdateam.rumora_demo.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.lamdateam.rumora_demo.dto.AuthRequest;
 import org.lamdateam.rumora_demo.dto.AuthResponse;
 import org.lamdateam.rumora_demo.dto.UpdateUserRequestDto;
@@ -8,6 +9,7 @@ import org.lamdateam.rumora_demo.repository.IUserRepository;
 import org.lamdateam.rumora_demo.security.JwtTokenProvider;
 import org.lamdateam.rumora_demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -135,12 +137,23 @@ public class AuthController {
     @PutMapping("/profile")
     public ResponseEntity<?> updateUser(
             @RequestBody UpdateUserRequestDto request,
-            Authentication auth
+            HttpServletRequest requestHttp  // ← HttpServletRequest вместо Authentication
     ) {
         try {
-            Long userId = Long.parseLong(auth.getName());
+            // Извлекаем user_id из токена
+            String authHeader = requestHttp.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            String token = authHeader.substring(7);
+            String userIdStr = jwtTokenProvider.getUsernameFromToken(token); // sub = user_id
+            Long userId = Long.parseLong(userIdStr);
+
+            // Обновляем профиль
             userService.updateUserById(userId, request.getUsername(), request.getPassword());
             return ResponseEntity.ok("Профиль успешно обновлён");
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Неверный формат user ID");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
