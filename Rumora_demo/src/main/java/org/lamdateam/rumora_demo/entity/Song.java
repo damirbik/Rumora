@@ -25,7 +25,7 @@ public class Song {
     @Column(name = "audio_file", nullable = false)
     private String audioFile;
 
-    @Column(name = "text_song")
+    @Column(name = "text_song", length = 3000)
     private String textSong;
 
 
