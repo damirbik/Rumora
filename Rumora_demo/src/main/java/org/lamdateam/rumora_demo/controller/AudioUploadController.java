@@ -22,7 +22,7 @@ public class AudioUploadController {
     }
 
     // Только модератор и админ могут загружать аудио
-    @PreAuthorize("hasAnyRole('Moder', 'Admin')")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Moder')")
     @PostMapping("/audio")
     public ResponseEntity<FileUploadResponseDto> uploadAudioFile(@RequestParam("file") MultipartFile file) {
         FileUploadResponseDto response = fileStorageService.storeAudioFile(file);

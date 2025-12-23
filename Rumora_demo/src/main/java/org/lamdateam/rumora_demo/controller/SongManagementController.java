@@ -1,7 +1,6 @@
 package org.lamdateam.rumora_demo.controller;
 
 import org.lamdateam.rumora_demo.dto.SongDto;
-import org.lamdateam.rumora_demo.entity.Song;
 import org.lamdateam.rumora_demo.service.SongManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,11 +8,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-
 @RestController
-@RequestMapping("/api/admin/songs")
+@RequestMapping("/api/admin/songs") // ← базовый путь
 @CrossOrigin(origins = "http://localhost:3000")
-
 public class SongManagementController {
 
     private final SongManagementService songManagementService;
@@ -23,25 +20,28 @@ public class SongManagementController {
         this.songManagementService = songManagementService;
     }
 
-    @PreAuthorize("hasAnyRole('Moder', 'Admin')")
+    // ✅ Обновление текстовых полей
+    @PreAuthorize("hasAnyAuthority('Admin', 'Moder')")
     @PutMapping("/{songId}")
     public ResponseEntity<SongDto> updateSong(
             @PathVariable Integer songId,
-            @RequestBody SongDto songDto  // ← Тип: SongDto, имя: songDto
+            @RequestBody SongDto songDto
     ) {
         SongDto updated = songManagementService.updateSong(songId, songDto);
         return ResponseEntity.ok(updated);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    // ✅ Удаление трека
+    @PreAuthorize("hasAuthority('Admin')")
     @DeleteMapping("/{songId}")
     public ResponseEntity<Void> deleteSong(@PathVariable Integer songId) {
         songManagementService.deleteSong(songId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('Admin')")
-    @PostMapping("/songs/{songId}/cover")
+    // ✅ Обновление обложки — ИСПРАВЛЕНО: убрано лишнее /songs
+    @PreAuthorize("hasAuthority('Admin')")
+    @PostMapping("/{songId}/cover")
     public ResponseEntity<SongDto> updateCover(
             @PathVariable Integer songId,
             @RequestParam MultipartFile songCover
@@ -50,8 +50,9 @@ public class SongManagementController {
         return ResponseEntity.ok(updated);
     }
 
-    @PreAuthorize("hasRole('Admin')")
-    @PostMapping("/songs/{songId}/audio")
+    // ✅ Обновление аудио — ИСПРАВЛЕНО: убрано лишнее /songs
+    @PreAuthorize("hasAuthority('Admin')")
+    @PostMapping("/{songId}/audio")
     public ResponseEntity<SongDto> updateAudio(
             @PathVariable Integer songId,
             @RequestParam MultipartFile audioFile
@@ -60,8 +61,10 @@ public class SongManagementController {
         return ResponseEntity.ok(updated);
     }
 
-    @PreAuthorize("hasRole('Admin')")
-    @PostMapping("/songs")
+    // ✅ Добавление трека
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @PostMapping  // ← без /songs!
     public ResponseEntity<SongDto> addSong(
             @RequestParam String songName,
             @RequestParam String authorName,

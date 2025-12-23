@@ -53,7 +53,7 @@ public class CommentController {
         public void setComment(String comment) { this.comment = comment; }
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAuthority('Admin')")
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Integer commentId) {
         commentService.deleteComment(commentId);

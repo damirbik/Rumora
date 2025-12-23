@@ -1,6 +1,7 @@
 package org.lamdateam.rumora_demo.service;
 
 import org.lamdateam.rumora_demo.dto.FileUploadResponseDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,8 +14,12 @@ import java.util.UUID;
 @Service
 public class FileStorageService {
 
-    private static final String AUDIO_DIR = "/audio/";
-    private static final String COVERS_DIR = "/covers/";
+    @Value("${file.upload-dir:uploads}")
+    private String uploadBaseDir;
+
+    private static final String UPLOAD_BASE_DIR = "uploads";
+    private static final String AUDIO_DIR = UPLOAD_BASE_DIR + "/audio/";
+    private static final String COVERS_DIR = UPLOAD_BASE_DIR + "/covers/";
 
     public FileUploadResponseDto storeAudioFile(MultipartFile file) {
         return storeFile(file, AUDIO_DIR);
