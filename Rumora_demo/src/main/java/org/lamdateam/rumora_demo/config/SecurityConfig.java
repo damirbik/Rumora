@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/songs").authenticated()
                         .requestMatchers("/api/songs/**").authenticated()
                         .requestMatchers("/api/search/**").authenticated()
-                        .requestMatchers("/audio/**").permitAll()
+                        .requestMatchers("/api/audio/**").permitAll()
                         .requestMatchers("/covers/**").permitAll()
                         .requestMatchers("/health").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/api/favorites/**").permitAll() // ← Это уже есть
