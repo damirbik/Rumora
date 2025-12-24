@@ -5,6 +5,7 @@ import org.lamdateam.rumora_demo.dto.SongDto;
 import org.lamdateam.rumora_demo.entity.Author;
 import org.lamdateam.rumora_demo.entity.Song;
 import org.lamdateam.rumora_demo.repository.IAuthorRepository;
+import org.lamdateam.rumora_demo.repository.IFavoriteSongRepository;
 import org.lamdateam.rumora_demo.repository.ISongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,16 +17,18 @@ public class SongManagementService {
     private final ISongRepository songRepository;
     private final IAuthorRepository authorRepository;
     private final FileStorageService fileStorageService;
+    private final IFavoriteSongRepository favoriteSongRepository;
 
     @Autowired
     public SongManagementService(
             ISongRepository songRepository,
             IAuthorRepository authorRepository,
-            FileStorageService fileStorageService
+            FileStorageService fileStorageService, IFavoriteSongRepository favoriteSongRepository
     ) {
         this.songRepository = songRepository;
         this.authorRepository = authorRepository;
         this.fileStorageService = fileStorageService;
+        this.favoriteSongRepository = favoriteSongRepository;
     }
 
     /**
@@ -94,6 +97,7 @@ public class SongManagementService {
         if (!songRepository.existsById(songId)) {
             throw new RuntimeException("Трек не найден");
         }
+        favoriteSongRepository.deleteBySongId(songId); // ← явно
         songRepository.deleteById(songId);
     }
 

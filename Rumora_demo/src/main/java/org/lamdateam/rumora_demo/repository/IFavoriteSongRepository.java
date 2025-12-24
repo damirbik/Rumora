@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface IFavoriteSongRepository extends JpaRepository<FavoriteSong, FavoriteSongId> {
     List<FavoriteSong> findByUserId(Long userId);
-
+    void deleteBySongId(Integer songId);
     boolean existsByUserIdAndSongId(Long userId, Integer songId);
 }
