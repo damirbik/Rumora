@@ -9,6 +9,7 @@ import org.lamdateam.rumora_demo.repository.IFavoriteSongRepository;
 import org.lamdateam.rumora_demo.repository.ISongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -93,6 +94,7 @@ public class SongManagementService {
     /**
      * Удаляет трек по ID
      */
+    @Transactional
     public void deleteSong(Integer songId) {
         if (!songRepository.existsById(songId)) {
             throw new RuntimeException("Трек не найден");
